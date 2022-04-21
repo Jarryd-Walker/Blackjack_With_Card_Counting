@@ -15,10 +15,16 @@ class Participant{
     }
     playerHandArray(newCards){
         this.handArray = this.handArray.concat(newCards)
+        if(this.handArray.reduce((a,b) => a + b, 0) > 21){
+            const aceIndex = this.handArray.indexOf(11)
+            if(aceIndex !== -1){
+                this.handArray[aceIndex] = 1
+            }
+        }
         this.calculateHandValue(this.handArray)
     }
-    calculateHandValue(cardValueArray){
-        this.handValue = cardValueArray.reduce((a,b) => a + b, 0)
+    calculateHandValue(handArray){
+        this.handValue = handArray.reduce((a,b) => a + b, 0)
         console.log(this.handValue)
         if(this === dealer){
             document.querySelector(`#dealerHand`).innerText = `${this.name} hand: ${this.handValue}`
@@ -52,11 +58,40 @@ fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
 document.querySelector('button').addEventListener('click', deal)
 
 function deal(){
-    //set hand value to 0
     //reset images
-    //hide Deal button
+    dealer.handValue = 0
+    player1.handValue = 0
+    document.querySelector('#hitBtn').style.display = 'flex'
+    document.querySelector('#dealBtn').style.display = 'none'
     drawCards(1, 'dealer').then(v => dealer.playerHandArray(v))
     drawCards(2, 'player').then(v => player1.playerHandArray(v))
+}
+
+document.querySelector('#hitBtn').addEventListener('click', hit)
+document.querySelector('#standBtn').addEventListener('click', stand)
+document.querySelector('#doubleDownBtn').addEventListener('click', doubleDown)
+
+function hit(){
+    drawCards(1, 'player').then(v => player1.playerHandArray(v))
+}
+function stand(){
+    // if player > 21 player lose, need to add
+    if(dealer.handValue > 21){
+        return console.log('dealer bust');
+    }else if(dealer.handValue > player1.handValue){
+        return console.log('dealer wins')
+    }else if(dealer.handValue < 17){
+        drawCards(1, 'dealer').then(v => dealer.playerHandArray(v)).then(a => {
+            stand()
+        })
+    }else if(dealer.handValue < player1.handValue){
+        return console.log('player wins');   
+    }else if(dealer.handValue === player1.handValue){
+        return console.log('tie');    
+    }
+}
+function doubleDown(){
+
 }
 
 // function to draw cards
@@ -66,7 +101,6 @@ function drawCards(numOfCards, user){
     const cardValues = fetch(url)
         .then(res => res.json())
         .then(data => {
-            // console.log(data)
             const container = document.querySelector(`#${user}ImgContainer`)
             let cardValues = []
             for(let i = 0; i < numOfCards; i++){

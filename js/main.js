@@ -5,14 +5,6 @@ const doubleDownBtn = document.querySelector('#doubleDownBtn')
 const splitBtn = document.querySelector('#splitBtn')
 const result = document.querySelector('#result')
 
-dealBtn.addEventListener('click', deal)
-hitBtn.addEventListener('click', hit)
-standBtn.addEventListener('click', stand)
-doubleDownBtn.addEventListener('click', doubleDown)
-splitBtn.addEventListener('click', split)
-
-// create player objects
-
 class Participant{
     constructor(name){
         this.name = name
@@ -44,19 +36,16 @@ class Participant{
         }else{
             document.querySelector('#playerHand').innerText = `Player hand: ${this.handValue}`
         }
-    }
-    
+    }  
 }
 // public, private methods???
 
 //create dealer and player for now, input later for multiple players
 const dealer = new Participant('Dealer')
-const player1 = new Participant('Player1')
+const player = new Participant('Player')
 
-// get deck
+
 let deckId = ''
-
-//new deck function
 function getNewDeck(){
     fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
         .then(res => res.json())
@@ -77,28 +66,26 @@ function deal(){
     }
     result.innerText = ''
     dealer.handArray = []
-    player1.handArray = []
+    player.handArray = []
     dealer.handValue = 0
-    player1.handValue = 0
-    player1.stand = false
+    player.handValue = 0
+    player.stand = false
     hitBtn.style.display = 'flex'
     standBtn.style.display = 'flex'
     doubleDownBtn.style.display = 'flex'
     splitBtn.style.display = 'flex'
     dealBtn.style.display = 'none'
-    drawCards(2, 'player')
-        .then(v => player1.playerHandArray(v))
-        .then(v => checkResult(v))
-        .then(a => drawCards(1, 'dealer'))
+    drawCards(1, 'dealer')
         .then(v => dealer.playerHandArray(v))
         .then(v => checkResult(v))
+        .then(a => drawCards(2, 'player'))
+        .then(v => player.playerHandArray(v))
+        .then(v => checkResult(v))
+
 }
-
-
-
 function hit(){
     drawCards(1, 'player')
-        .then(v => player1.playerHandArray(v))
+        .then(v => player.playerHandArray(v))
         .then(v => checkResult(v))
 }
 function stand(){
@@ -108,7 +95,7 @@ function stand(){
             .then(v => checkResult(v))
             .then(a => stand())
         }
-    player1.stand = true
+    player.stand = true
 }
 function doubleDown(){
 
@@ -118,17 +105,17 @@ function split(){
 }
 
 function checkResult(){
-    if(player1.handValue === 21){
+    if(player.handValue === 21){
         endGame('player wins!!')
-    }else if(player1.handValue > 21){
+    }else if(player.handValue > 21){
         endGame('player bust')
     }else if(dealer.handValue > 21){
         endGame('dealer bust')
-    }else if(dealer.handValue > player1.handValue && player1.stand === true){
+    }else if(dealer.handValue > player.handValue && player.stand === true){
         endGame('dealer wins')
-    }else if(dealer.handValue < player1.handValue && player1.stand === true && dealer.handValue > 16){
+    }else if(dealer.handValue < player.handValue && player.stand === true && dealer.handValue > 16){
         endGame('player wins')
-    }else if(dealer.handValue === player1.handValue && player1.stand === true && dealer.handValue > 16){
+    }else if(dealer.handValue === player.handValue && player.stand === true && dealer.handValue > 16){
         endGame('tie')
     }else{
         return
@@ -175,6 +162,12 @@ function cardValue(val){
         return val
     }
 }
+
+dealBtn.addEventListener('click', deal)
+hitBtn.addEventListener('click', hit)
+standBtn.addEventListener('click', stand)
+doubleDownBtn.addEventListener('click', doubleDown)
+splitBtn.addEventListener('click', split)
 
 // function to double down, split
 // keep bet amount, winnings, losses, and add to local storage

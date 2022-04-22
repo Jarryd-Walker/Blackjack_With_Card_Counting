@@ -25,7 +25,10 @@ body {
 
 }
 
-#hitBtn{
+#hitBtn,
+#standBtn,
+#doubleDownBtn,
+#splitBtn{
   display: none;
 }
 

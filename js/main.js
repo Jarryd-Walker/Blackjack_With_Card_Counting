@@ -1,3 +1,16 @@
+const dealBtn = document.querySelector('#dealBtn')
+const hitBtn = document.querySelector('#hitBtn')
+const standBtn = document.querySelector('#standBtn')
+const doubleDownBtn = document.querySelector('#doubleDownBtn')
+const splitBtn = document.querySelector('#splitBtn')
+const result = document.querySelector('#result')
+
+dealBtn.addEventListener('click', deal)
+hitBtn.addEventListener('click', hit)
+standBtn.addEventListener('click', stand)
+doubleDownBtn.addEventListener('click', doubleDown)
+splitBtn.addEventListener('click', split)
+
 // create player objects
 
 class Participant{
@@ -8,8 +21,8 @@ class Participant{
         this.currentBet = 0
         this.handValue = 0
         this.handArray = []
+        this.stand = false
     }
-
     increaseWin(){
         this.wins++
     }
@@ -27,9 +40,9 @@ class Participant{
         this.handValue = handArray.reduce((a,b) => a + b, 0)
         console.log(this.handValue)
         if(this === dealer){
-            document.querySelector(`#dealerHand`).innerText = `${this.name} hand: ${this.handValue}`
+            document.querySelector('#dealerHand').innerText = `Dealer hand: ${this.handValue}`
         }else{
-            document.querySelector(`#playerHand`).innerText = `${this.name} hand: ${this.handValue}`
+            document.querySelector('#playerHand').innerText = `Player hand: ${this.handValue}`
         }
     }
     
@@ -41,60 +54,95 @@ const dealer = new Participant('Dealer')
 const player1 = new Participant('Player1')
 
 // get deck
-
 let deckId = ''
 
-fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
-    .then(res => res.json())
-    .then(data => {
-        deckId = data.deck_id
-    })
-    .catch(err => {
-        console.log(`error ${err}`)
-    })
+//new deck function
+function getNewDeck(){
+    fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
+        .then(res => res.json())
+        .then(data => {
+            deckId = data.deck_id
+        })
+        .catch(err => {
+            console.log(`error ${err}`)
+        })
+}
+//delete once organised
+getNewDeck()
 
-// start game and setup function, deal 2 cards each, 1 face down for dealer
-
-document.querySelector('button').addEventListener('click', deal)
 
 function deal(){
-    //reset images
+    if(document.querySelector('img')){
+        Array.from(document.querySelectorAll('img')).forEach(e => e.remove())
+    }
+    result.innerText = ''
+    dealer.handArray = []
+    player1.handArray = []
     dealer.handValue = 0
     player1.handValue = 0
-    document.querySelector('#hitBtn').style.display = 'flex'
-    document.querySelector('#dealBtn').style.display = 'none'
-    drawCards(1, 'dealer').then(v => dealer.playerHandArray(v))
-    drawCards(2, 'player').then(v => player1.playerHandArray(v))
+    player1.stand = false
+    hitBtn.style.display = 'flex'
+    standBtn.style.display = 'flex'
+    doubleDownBtn.style.display = 'flex'
+    splitBtn.style.display = 'flex'
+    dealBtn.style.display = 'none'
+    drawCards(2, 'player')
+        .then(v => player1.playerHandArray(v))
+        .then(v => checkResult(v))
+        .then(a => drawCards(1, 'dealer'))
+        .then(v => dealer.playerHandArray(v))
+        .then(v => checkResult(v))
 }
 
-document.querySelector('#hitBtn').addEventListener('click', hit)
-document.querySelector('#standBtn').addEventListener('click', stand)
-document.querySelector('#doubleDownBtn').addEventListener('click', doubleDown)
+
 
 function hit(){
-    drawCards(1, 'player').then(v => player1.playerHandArray(v))
+    drawCards(1, 'player')
+        .then(v => player1.playerHandArray(v))
+        .then(v => checkResult(v))
 }
 function stand(){
-    // if player > 21 player lose, need to add
-    if(dealer.handValue > 21){
-        return console.log('dealer bust');
-    }else if(dealer.handValue > player1.handValue){
-        return console.log('dealer wins')
-    }else if(dealer.handValue < 17){
-        drawCards(1, 'dealer').then(v => dealer.playerHandArray(v)).then(a => {
-            stand()
-        })
-    }else if(dealer.handValue < player1.handValue){
-        return console.log('player wins');   
-    }else if(dealer.handValue === player1.handValue){
-        return console.log('tie');    
-    }
+    if(dealer.handValue < 17){
+        drawCards(1, 'dealer')
+            .then(v => dealer.playerHandArray(v))
+            .then(v => checkResult(v))
+            .then(a => stand())
+        }
+    player1.stand = true
 }
 function doubleDown(){
 
 }
+function split(){
 
-// function to draw cards
+}
+
+function checkResult(){
+    if(player1.handValue === 21){
+        endGame('player wins!!')
+    }else if(player1.handValue > 21){
+        endGame('player bust')
+    }else if(dealer.handValue > 21){
+        endGame('dealer bust')
+    }else if(dealer.handValue > player1.handValue && player1.stand === true){
+        endGame('dealer wins')
+    }else if(dealer.handValue < player1.handValue && player1.stand === true && dealer.handValue > 16){
+        endGame('player wins')
+    }else if(dealer.handValue === player1.handValue && player1.stand === true && dealer.handValue > 16){
+        endGame('tie')
+    }else{
+        return
+    }
+}
+
+function endGame(gameResult){
+    result.innerText = gameResult
+    hitBtn.style.display = 'none'
+    standBtn.style.display = 'none'
+    doubleDownBtn.style.display = 'none'
+    splitBtn.style.display = 'none'
+    dealBtn.style.display = 'flex'
+}
 
 function drawCards(numOfCards, user){
     const url = `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${numOfCards}`
@@ -103,6 +151,7 @@ function drawCards(numOfCards, user){
         .then(data => {
             const container = document.querySelector(`#${user}ImgContainer`)
             let cardValues = []
+            document.querySelector('#deck').innerText = `Cards left in deck: ${data.remaining}`
             for(let i = 0; i < numOfCards; i++){
                 const content = document.createElement('img')
                 container.appendChild(content)
@@ -117,8 +166,6 @@ function drawCards(numOfCards, user){
     return cardValues
 }
 
-// calculate card value
-
 function cardValue(val){
     if(val === 'ACE'){
         return [11]
@@ -129,11 +176,8 @@ function cardValue(val){
     }
 }
 
-// function to hit, double down, stand, or split
-// keep hand score, dealer score, bet amount, winnings, losses, and add to local storage
+// function to double down, split
+// keep bet amount, winnings, losses, and add to local storage
 // default img for upside down card
-
+// when deck runs out, grab new deck
 // card count logic
-
-
-

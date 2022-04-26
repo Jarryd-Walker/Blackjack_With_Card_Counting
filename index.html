@@ -6,29 +6,53 @@
   	<meta name="keywords" content="one, two, three">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
-		<title>Blank Template</title>
+		<title>Blackjack</title>
 
 		<!-- external CSS link -->
 		<link rel="stylesheet" href="css/normalize.css">
 		<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
-		<h1>Blackjack with card counting!</h1>
-		<button id="dealBtn">Deal</button>
-		<h2>Dealer</h2>
-		<span id="dealerHand">Dealer hand: </span>
-		<div id="dealerImgContainer"></div>
-		<button id="hitBtn">Hit</button>
-		<button id="standBtn">Stand</button>
-		<button id="doubleDownBtn">Double Down</button>
-		<button id="splitBtn">Split</button>
-		<h2 id="result"></h2>
-		<div id="playerImgContainer"></div>
-		<h2>Player</h2>
-		<span id="playerHand">Player hand: </span>
-		<span id="bet">Current bet: </span>
-		<span id="cash">Cash: </span>
-		<span id="deck"></span>
+		<section id="gameContainer">
+			<header>
+				<h1>Blackjack with card counting!</h1>
+			</header>
+			<section id="statsContainer">
+				<span>Deck</span>
+				<span id="deck" class="stats">52</span>
+				<span>Cash</span>
+				<span id="cash" class="stats">$1000</span>
+				<span>Bet</span>
+				<span id="bet" class="stats">$50</span>
+			</section>
+			<section id="countCardsContainer">
+				<span>Click here to cheat</span>
+			</section>
+			<section id="dealerContainer">
+				<h2>Dealer</h2>
+				<span id="dealerHand"></span>
+				<div id="dealerImgContainer"></div>
+			</section>
+			<section id="btnContainer">
+				<button id="hitBtn">Hit</button>
+				<button id="dealBtn">Deal</button>
+				<button id="doubleDownBtn">Double Down</button>
+				<button id="splitBtn">Split</button>
+				<button id="standBtn">Stand</button>
+			</section>
+			<section id="resultContainer">
+				<h2 id="result"></h2>
+			</section>
+			<section id="playerContainer">
+				<h2>Player</h2>
+				<span id="playerHand"></span>
+				<div id="playerImgContainer"></div>
+				<div id="playerSplitImgContainer"></div>
+			</section>
+			<footer>
+
+			</footer>
+		</section>
 		<script type="text/javascript" src="js/main.js"></script>
 	</body>
 </html>

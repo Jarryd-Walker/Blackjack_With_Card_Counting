@@ -21,10 +21,6 @@
 /* BASE STYLES
 /*******************************************/
 
-body {
-
-}
-
 #hitBtn,
 #standBtn,
 #doubleDownBtn,
@@ -37,11 +33,104 @@ body {
 /* LAYOUT
 /*******************************************/
 header {
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-area: header;
 }
-
-footer {
-
+#gameContainer{
+  background-image: url('bg.webp');
+display: grid;
+grid-template-areas: 
+  "header header header header header header header header"
+  "stats dealer dealer dealer dealer dealer dealer dealer"
+  "stats dealer dealer dealer dealer dealer dealer dealer"
+  "stats btn btn btn btn result result result"
+  "count player player player player player player player"
+  "count player player player player player player player"
+  "footer footer footer footer footer footer footer footer";
+height: 100vh;
+}
+#statsContainer,
+#countCardsContainer{
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+}
+#statsContainer{
+  grid-area: stats;
+}
+#countCardsContainer{
+  grid-area: count;
+}
+#dealerContainer{
+  display: flex;
+  flex-direction: column;
+  grid-area: dealer;
+}
+#btnContainer{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  grid-area: btn;
+  margin: 1rem;
+}
+#playerContainer{
+  display: flex;
+  flex-direction: column;
+  grid-area: player;
+}
+#dealerImgContainer,
+#playerImgContainer,
+#playerSplitImgContainer{
+  max-height: 140px;
+  padding: 0.5rem;
+}
+#dealerImgContainer img,
+#playerImgContainer > img,
+#playerSplitImgContainer img{
+  max-height: 10rem;
+  width: auto;
+  margin: 0 0.2rem;
+}
+section span{
+  margin: 1rem;
+}
+span{
+  color: white;
+}
+h1,
+h2{
+  color: #1aae2a;
+}
+button{
+  color: white;
+  font-size: 2rem;
+  background-color: #1aae2a;
+  border-radius: 15px;
+  padding: 1rem;
+  border: none;
+}
+.stats{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  border: 5px solid #1aae2a;
+  border-radius: 100%;
+  background-color: black;
+}
+footer{
+  height: 10rem;
+  grid-area: footer;
+}
+#resultContainer{
+  display: flex;
+  align-items: center;
+  grid-area: result;
+}
+#result{
+  font-size: 5rem;
 }
 
 /******************************************

@@ -32,11 +32,11 @@ class Participant{
         this.handValue = handArray.reduce((a,b) => a + b, 0)
         console.log(this.handValue)
         if(this === dealer){
-            document.querySelector('#dealerHand').innerText = `Dealer hand: ${this.handValue}`
+            document.querySelector('#dealerHand').innerText = `Hand: ${this.handValue}`
         }else{
-            document.querySelector('#playerHand').innerText = `Player hand: ${this.handValue}`
+            document.querySelector('#playerHand').innerText = `Hand: ${this.handValue}`
         }
-    }  
+    }
 }
 // public, private methods???
 
@@ -73,7 +73,6 @@ function deal(){
     hitBtn.style.display = 'flex'
     standBtn.style.display = 'flex'
     doubleDownBtn.style.display = 'flex'
-    splitBtn.style.display = 'flex'
     dealBtn.style.display = 'none'
     drawCards(1, 'dealer')
         .then(v => dealer.playerHandArray(v))
@@ -98,10 +97,13 @@ function stand(){
     player.stand = true
 }
 function doubleDown(){
-
+    drawCards(1, 'player')
+        .then(v => player.playerHandArray(v))
+        .then(v => checkResult(v))
+    //double bet size
 }
 function split(){
-
+    //double bet size
 }
 
 function checkResult(){
@@ -138,7 +140,7 @@ function drawCards(numOfCards, user){
         .then(data => {
             const container = document.querySelector(`#${user}ImgContainer`)
             let cardValues = []
-            document.querySelector('#deck').innerText = `Cards left in deck: ${data.remaining}`
+            document.querySelector('#deck').innerText = data.remaining
             for(let i = 0; i < numOfCards; i++){
                 const content = document.createElement('img')
                 container.appendChild(content)
@@ -169,7 +171,6 @@ standBtn.addEventListener('click', stand)
 doubleDownBtn.addEventListener('click', doubleDown)
 splitBtn.addEventListener('click', split)
 
-// function to double down, split
 // keep bet amount, winnings, losses, and add to local storage
 // default img for upside down card
 // when deck runs out, grab new deck
